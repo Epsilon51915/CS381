@@ -20,5 +20,7 @@
             the provided repository into that submodule. After, we use git submodule update --init --recursive in order to populate all of the 
             folders within the submodule and ensure they are ready for usage.
         e. In order to compile the code, use the cmake .. command mentioned earlier (or if on VSCode, use the Build button on the bottom left
-            corner of the screen.) This will run the cmake file in the above folder
-        f. In order to run the program, leave the as0 folder using 'cd ..'
+            corner of the screen.) This will run the cmake file in the above folder.
+        f. In order to run the program, leave the as0 folder using 'cd ..', then 'cd build', then './as0'. Alternatively, if built using the
+            Build button on the bottom left of the screen, you can also execute the program using the Play button to the right of the Build
+            button.
