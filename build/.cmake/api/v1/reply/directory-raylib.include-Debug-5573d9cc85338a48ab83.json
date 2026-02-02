@@ -1,0 +1,91 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 54,
+				"parent" : 0
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 9
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "include",
+			"paths" : 
+			[
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/AudioDevice.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/AudioStream.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/AutomationEventList.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/BoundingBox.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Camera2D.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Camera3D.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Color.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/FileData.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/FileText.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Font.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Functions.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Gamepad.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Image.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Keyboard.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Material.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Matrix.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Mesh.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/MeshUnmanaged.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Model.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/ModelAnimation.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Mouse.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Music.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Ray.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/RayCollision.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/RaylibException.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/raylib-cpp-utils.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/raylib-cpp.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/raylib.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/raymath.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Rectangle.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/RenderTexture.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/ShaderUnmanaged.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Shader.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Sound.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Text.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Texture.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/TextureUnmanaged.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Touch.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Vector2.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Vector3.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Vector4.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/VrStereoConfig.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Wave.hpp",
+				"C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include/Window.hpp"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "raylib/include",
+		"source" : "C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/include"
+	}
+}

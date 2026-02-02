@@ -1,0 +1,19 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 9
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "raylib/raylib/raylib/external/glfw",
+		"source" : "C:/Users/tyler/VSCode/CS381/Assignments/raylib-cpp/raylib/src/external/glfw"
+	}
+}

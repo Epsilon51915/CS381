@@ -1,0 +1,17 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/include/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/raylib/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/raylib/raylib/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/raylib/raylib/external/glfw/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/raylib/raylib/external/glfw/src/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/raygui/projects/CMake/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/BufferedRaylib/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/BufferedRaylib/FastSignals/cmake_install.cmake",
+		"C:/Users/tyler/VSCode/CS381/Assignments/build/raylib/BufferedRaylib/FastSignals/libfastsignals/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
