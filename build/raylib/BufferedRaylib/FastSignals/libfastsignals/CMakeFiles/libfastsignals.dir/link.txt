@@ -1,2 +1,0 @@
-C:\msys64\mingw64\bin\ar.exe qc liblibfastsignals.a CMakeFiles/libfastsignals.dir/src/connection.cpp.obj CMakeFiles/libfastsignals.dir/src/function_detail.cpp.obj CMakeFiles/libfastsignals.dir/src/signal_impl.cpp.obj
-C:\msys64\mingw64\bin\ranlib.exe liblibfastsignals.a

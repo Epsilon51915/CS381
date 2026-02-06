@@ -1,2 +1,0 @@
-C:\msys64\mingw64\bin\ar.exe qc libbuffered-raylib.a "CMakeFiles/buffered-raylib.dir/src/BufferedRaylib.cpp.obj"
-C:\msys64\mingw64\bin\ranlib.exe libbuffered-raylib.a
