@@ -4,8 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 build
-    .cache
-    .vscode
+.cache
+.vscode
 
 # User-specific files
 *.rsuser
