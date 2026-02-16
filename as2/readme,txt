@@ -1,0 +1,28 @@
+*==========*==========*==========*==========*==========*
+**
+**      Tyler Carroll
+**      CS 381 Assignment 2 README
+**      2/8/2026
+**
+*==========*==========*==========*==========*==========*
+
+1. Commands to compile/run program
+
+    a. Fetch repository
+        git submodule add 
+        git submodule --init --recursive
+
+    b. Compile program (starting within the as1 folder):
+    IMPORTANT: DELETE ANY PREVIOUSLY EXISTING BUILD FOLDER
+        mkdir build
+        cd build
+        cmake ..
+        make
+
+    c. Run program
+        ./as2
+    No controls
+
+2. Readme question:
+    a. The DrawBoundedModel function is a easy way of drawing multiple models with distinct transformations and bounding boxes. If given a parent model/transformation, you could modify the function to add onto the parent transformation some additional transformtations, and then apply these to a 'child' model.
+    b. The penguin model looks weird since only half of the model exists, so when rotated in some directions, you can see the second half of the model that doesn't exist. 
