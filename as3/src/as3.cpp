@@ -185,7 +185,7 @@ int main()
                 {
                     return transform.Translate(position).RotateY(raylib::Degree(heading));
                 });
-                skybox.Draw();
+                //skybox.Draw();
                 ground.Draw({});
                 //penguin.Draw({});
             }
