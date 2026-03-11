@@ -238,7 +238,6 @@ struct InputComponent : public Component
     void Cleanup() override{};
 };
 
-
 int main()
 {
     /*
@@ -292,7 +291,7 @@ int main()
             e.isEagle = true;
             model.model = &eagle;
             transform.position = raylib::Vector3{-200 + (float)(i-5) * 100, 150, 0};
-            input.headingMod = .1;
+            input.headingMod = 5;
             input.targetSpeedMod = 10;
             physics.acceleration = 10;
             physics.position = raylib::Vector3{-200 + (float)(i-5) * 100, 150, 0};
