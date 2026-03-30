@@ -3,7 +3,8 @@
 **      Tyler Carroll
 **      CS 381 Assignment 5 README
 **      2/8/2026
-**
+**      NOTE: I must've linked the ASIO library incorrectly, and I didn't notice until I got back from break, so this initial post only contains
+**          the comments for the client and server while I try to re-link ASIO to the assignment.
 *==========*==========*==========*==========*==========*
 
 1. Commands to compile/run program
