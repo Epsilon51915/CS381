@@ -1,19 +1,14 @@
 cmake_minimum_required(VERSION 3.18)
-project(as7 LANGUAGES CXX)
+project(as8 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(../raylib-cpp raylib)
-
-add_library(asio INTERFACE)
-target_include_directories(asio INTERFACE ../asio/include)
-target_compile_definitions(asio INTERFACE ASIO_STANDALONE)
 
 include(../assets/includeable.cmake)
 
 file(GLOB sources "src/*.cpp" "src/*.c")
-add_executable(as7 src/as7.cpp)
-target_link_libraries(as7 PUBLIC raylib raylib_cpp raylib::buffered asio)
-
-set_property(TARGET as7 PROPERTY CXX_STANDARD 20)
+add_executable(as8 src/as8.cpp src/skybox.cpp src/componentCounter.cpp)
+target_link_libraries(as8 PUBLIC raylib raylib_cpp raygui)
+set_property(TARGET as8 PROPERTY CXX_STANDARD 20)
 
 make_includeable(../assets/shaders/skybox.vs generated/skybox.vs)
 make_includeable(../assets/shaders/skybox.fs generated/skybox.fs)
