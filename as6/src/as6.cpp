@@ -9,6 +9,9 @@
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <string>
+#include <cstdlib>
+#include <ctime>
 
 #define GUI_LAYOUT_NAME_IMPLEMENTATION
 #include "gui_layout_name.h"
@@ -117,10 +120,11 @@ struct PhysicsComponent : public Component
         {
             auto& transform = t->get();
             heading += headingMod;
-            //std::cout << heading << std::endl;
+            std::cout <<"Heading: " << heading << std::endl;
+            heading = angle_clamp(heading);
             // NOTE: Quaternion rotations are based off of RADIAN values, while RotateXYZ operate with DEGREE values. Keep this in mind when trying to rotate objects using one method or another
 
-            if((heading < 270.5 && heading > 269.5) || (heading < -89.5 && heading > -90.5))
+            if(heading < 275 && heading > 265)
             {
                 headingMod = 0;
                 heading = 270;
@@ -153,6 +157,7 @@ int main()
         DO NOT CHANGE: THIS IS ALL BASIC SETUP
         =====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====*=====
     */
+    std::srand(std::time(0));
     raylib::Window window(800, 600, "AS5");
     window.SetState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(60);
@@ -176,6 +181,7 @@ int main()
 
     raylib::Music music("audio/scary.mp3");
     music.Play();
+    raylib::Sound lightning_strike("audio/lightning.mp3");
     const float acceleration = 10;
     std::vector<Entity> allEntities;
     allEntities.reserve(1);
@@ -264,8 +270,9 @@ int main()
             {
                 score += allEntities.size() * dt * maxSpeed;
             }
-            std::cout << "Score: " << int(score) << std::endl;
-           
+            std::string scre = "Score: " + std::to_string(int(score));
+            //std::cout << scre << std::endl;
+            DrawText(scre.c_str(), 500, 20, 20, WHITE);
         }
         GuiLayoutName(&gui_state);
         window.EndDrawing();   
@@ -274,7 +281,10 @@ int main()
         {
             music.Update();
         }
-        
+        if(std::rand() % 500 == 0)
+        {
+            lightning_strike.Play();
+        }
     }
         
 

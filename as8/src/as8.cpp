@@ -177,18 +177,21 @@ int main()
 
     cs381::SkyBox skybox("textures/skybox.png");
 
+    // raylib::Quaternion::Identity();
+    raylib::Quaternion::FromEuler(raylib::Degree(45).RadianValue(), 0, 0);
+
+    raylib::Quaternion rotation;
+
+    rotation = rotation * raylib::Quaternion::FromEuler(raylib::Degree(45).RadianValue(), 0, 0);
+
+    raylib::Vector3::Forward().RotateByQuaternion(rotation);
+
     int selected = 0;
 
     while(!window.ShouldClose())
     {
         window.BeginDrawing();
         {
-            // if(raylib::Keyboard::IsKeyPressed(KEY_TAB))
-            // {
-            //     selected = (selected + 1) % allEntities.size();
-            // }
-            
-
             float dt = window.GetFrameTime();
             window.ClearBackground(raylib::Color::RayWhite());
 
