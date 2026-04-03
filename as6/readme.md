@@ -8,13 +8,13 @@
 
 ### Compile program:
     **IMPORTANT: DELETE ANY PREVIOUSLY EXISTING BUILD FOLDER**
-    'mkdir build'
-    'cd build'
-    'cmake ..'
-    'make'
+    `mkdir build`
+    `cd build`
+    `cmake ..`
+    `make`
 
 ### Run program
-    './as6'
+    `./as6`
 
 ### Controls:
     A/D - Change the direction that the penguin is spinning in.
