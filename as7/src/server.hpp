@@ -108,6 +108,10 @@ void handle_client_read(std::shared_ptr<ClientConnection> client) {
             }
             
         }
+        msg = client->username + ": " + msg;
+                
+        // Sends the message back out to every client
+        broadcast_message(msg);
         // since new message was made, delete currently read portion of the message
         client->read_buffer.erase(0, bytes_read);
         
