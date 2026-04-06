@@ -7,7 +7,7 @@
     git submodule --init --recursive
 
 ### Compile program:
-    **IMPORTANT: DELETE ANY PREVIOUSLY EXISTING BUILD FOLDER**
+    ** IMPORTANT: DELETE ANY PREVIOUSLY EXISTING BUILD FOLDER **
     `mkdir build`
     `cd build`
     `cmake ..`

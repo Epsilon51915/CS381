@@ -18,6 +18,7 @@ struct ClientConnection {
     std::string read_buffer;
     // Queue for string to be written to the server
     std::deque<std::string> write_queue;
+    std::string username;
 };
 
 // List of all clients
@@ -77,11 +78,40 @@ void handle_client_read(std::shared_ptr<ClientConnection> client) {
 
         //create new message object from the read buffer
         std::string msg = client->read_buffer.substr(0, bytes_read);
+        if(msg != "")
+        {
+            if(msg.substr(0, 1) == "/")
+            {
+                // Check for nick command
+                if(msg.length() >= 6)
+                {
+                    if(msg.substr(0, 6) == "/nick")
+                    {
+                        std::string new_username = msg.substr(6);
+                        if(new_username != "")
+                        {
+                            // Delete newline character
+                            new_username.pop_back();
+                            // Change client user
+                            client->username = new_username;
+                        }
+                    }
+                }
+                // Display message as intended
+                else
+                {
+                msg = client->username + ": " + msg;
+                
+                // Sends the message back out to every client
+                broadcast_message(msg);
+                }
+            }
+            
+        }
         // since new message was made, delete currently read portion of the message
         client->read_buffer.erase(0, bytes_read);
         
-        // Sends the message back out to every client
-        broadcast_message(msg);
+        
 
         // continue to recursively handle reads
         handle_client_read(client);
