@@ -3,8 +3,8 @@
 ## Usage
 
 ### Fetch repository
-    git submodule add 
-    git submodule --init --recursive
+    `git submodule add` 
+    `git submodule --init --recursive`
 
 ### Compile program:
     ** IMPORTANT: DELETE ANY PREVIOUSLY EXISTING BUILD FOLDER **
