@@ -19,6 +19,13 @@
 #include "skybox.hpp"
 #include <iostream>
 
+size_t globalComponentCounter = 0;
+template<typename T>
+size_t GetComponentID(/* T reference = {} */) {
+    static size_t id = globalComponentCounter++;
+    return id;
+}
+
 raylib::Degree angle_normalize(raylib::Degree angle) {
     float decimal = float(angle) - int(angle);
     int whole = int(angle) % 360; // [-360-360]
@@ -212,12 +219,12 @@ void Compute3DPhysicsSystem(Context &ctx)
 // }
 */
 
-template<std::invocable<Context&>... Tsystems>
-auto sequential(Tsystems... systems) {
-    return [=](Context& ctx) {
-        (systems(ctx), ...);
-    };
-}
+// template<std::invocable<Context&>... Tsystems>
+// auto sequential(Tsystems... systems) {
+//     return [=](Context& ctx) {
+//         (systems(ctx), ...);
+//     };
+// }
 
 int main() {
     raylib::Window window(800, 600, "As0");
