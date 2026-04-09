@@ -34,6 +34,7 @@ raylib::Degree angle_normalize(raylib::Degree angle) {
 }
 
 using entity = size_t;
+entity selected = 0;
 
 struct ComponentStorageBase {
     virtual ~ComponentStorageBase() {}
@@ -110,6 +111,17 @@ struct Context {
     }
 };
 
+/***************************************************************
+**
+**      BEGIN COMPONENTS
+**
+****************************************************************/
+
+struct SelectedComponent
+{
+    bool selected;
+};
+
 struct ModelComponent {
     raylib::Model* model;
 };
@@ -124,6 +136,7 @@ struct PhysicsComponent
     float speed;
     float target_speed;
     float acceleration;
+    float target_speed_mod;
 };
 
 struct PhysicsComponent2D
@@ -137,54 +150,84 @@ struct PhysicsComponent3D
     raylib::Quaternion rotation;
 };
 
+/***************************************************************
+**
+**      BEGIN SYSTEMS
+**
+****************************************************************/
+
 void DrawModelSystem(Context& ctx) {
     for(entity e = 0; e < ctx.entityMasks.size(); ++e)
     {
+        if(!ctx.HasComponent<SelectedComponent>(e)) continue;
         if(!ctx.HasComponent<ModelComponent>(e)) continue;
         if(!ctx.HasComponent<PositionComponent>(e)) continue;
 
+
         auto model = ctx.GetComponent<ModelComponent>(e);
         auto position = ctx.GetComponent<PositionComponent>(e);
-        model.model->Draw(position.position);  
+        auto selected = ctx.GetComponent<SelectedComponent>(e);
+
+        auto backupTransform = model.model->transform;
+        if(ctx.HasComponent<PhysicsComponent3D>(e))
+        {
+            // Holy shit what a bullshit ass line of code
+            model.model->transform = raylib::Transform(model.model->transform).Translate(position.position).RotateXYZ(ctx.GetComponent<PhysicsComponent3D>(e).rotation.ToEuler());
+        }
+        else if(ctx.HasComponent<PhysicsComponent2D>(e))
+        {
+            model.model->transform = raylib::Transform(model.model->transform).Translate(position.position).RotateY(ctx.GetComponent<PhysicsComponent2D>(e).heading);
+        }
+        
+        model.model->Draw({});  
+
+        if(selected.selected)
+        {
+            DrawBoundingBox(model.model->GetTransformedBoundingBox(), BLUE);
+        }
+
+        model.model->transform = backupTransform;
     }
 }
 
-void ComputePhysicsSystem(Context &ctx)
+void ComputePhysicsSystem(Context &ctx, float dt)
 {
     for(entity e = 0; e < ctx.entityMasks.size(); ++e)
     {
         if(!ctx.HasComponent<PositionComponent>(e)) continue;
         if(!ctx.HasComponent<PhysicsComponent>(e)) continue;
 
-        auto position = ctx.GetComponent<PositionComponent>(e);
-        auto physics = ctx.GetComponent<PhysicsComponent>(e);
+        auto &position = ctx.GetComponent<PositionComponent>(e);
+        auto &physics = ctx.GetComponent<PhysicsComponent>(e);
 
-        if(physics.speed < physics.target_speed)
-        {
-            
-        }
-        else
-        {
-
-        }
+        position.position += physics.velocity * dt;
     }
 }
 
-void Compute2DPhysicsSystem(Context &ctx)
+void Compute2DPhysicsSystem(Context &ctx, float dt)
 {
     for(entity e = 0; e < ctx.entityMasks.size(); ++e)
     {
         if(!ctx.HasComponent<PhysicsComponent2D>(e)) continue;
         if(!ctx.HasComponent<PhysicsComponent>(e)) continue;
 
-        auto physics2d = ctx.GetComponent<PhysicsComponent2D>(e);
-        auto physics = ctx.GetComponent<PhysicsComponent>(e);
+        auto &physics2d = ctx.GetComponent<PhysicsComponent2D>(e);
+        auto &physics = ctx.GetComponent<PhysicsComponent>(e);
 
-        
+        if(physics.speed < physics.target_speed)
+        {
+            physics.speed += physics.acceleration * dt;
+        }
+        else if (physics.speed > physics.target_speed)
+        {
+            physics.speed -= physics.acceleration * dt;
+        }
+            
+        physics.velocity = raylib::Vector3(-cos(physics2d.heading.RadianValue()), 0, sin(physics2d.heading.RadianValue())) * physics.speed;   
     }
 }
 
-void Compute3DPhysicsSystem(Context &ctx)
+void Compute3DPhysicsSystem(Context &ctx, float dt)
 {
     for(entity e = 0; e < ctx.entityMasks.size(); ++e)
     {
@@ -194,37 +237,98 @@ void Compute3DPhysicsSystem(Context &ctx)
         auto physics3d = ctx.GetComponent<PhysicsComponent3D>(e);
         auto physics = ctx.GetComponent<PhysicsComponent>(e);
 
-        
+        if(physics.speed < physics.target_speed)
+        {
+            physics.speed += physics.acceleration * dt;
+        }
+        else if (physics.speed > physics.target_speed)
+        {
+            physics.speed -= physics.acceleration * dt;
+        }
+
+        //physics.velocity = 
     }
 }
 
-/*
-// auto sequential(auto func) {
-//     return [func](Context& ctx) {
-//         // Bulk process
-//         for(entity e = 0; e < ctx.entityMasks.size(); ++e) {
-//             func(ctx, e);
-//         }
-//     };
-// }
+void InputSystem(Context &ctx)
+{
+    for(entity e = 0; e < ctx.entityMasks.size(); ++e)
+    {
+        if(!ctx.HasComponent<SelectedComponent>(e)) continue;
+        if(!ctx.GetComponent<SelectedComponent>(e).selected) continue;
+        if(!ctx.HasComponent<PhysicsComponent>(e)) continue;
 
-// auto parallel(auto func) {
-//     return [func](Context& ctx) {
-//         std::vector<entity> entities(ctx.entityMasks.size());
-//         std::iota(entities.begin(), entities.end(), 0);
-//         std::for_each(std::execution::par_unseq, entities.begin(), entities.end(), [func, &ctx](entity e){
-//             func(ctx, e);
-//         });
-//     };
-// }
-*/
+        auto &physics = ctx.GetComponent<PhysicsComponent>(e);
+        if(raylib::Keyboard::IsKeyPressed(KEY_W))
+        {
+            physics.target_speed += physics.target_speed_mod;
+        }
+        else if(raylib::Keyboard::IsKeyPressed(KEY_S))
+        {
+            physics.target_speed -= physics.target_speed_mod;
+        }
+        else if(raylib::Keyboard::IsKeyPressed(KEY_SPACE))
+        {
+            physics.target_speed = 0;
+        }
 
-// template<std::invocable<Context&>... Tsystems>
-// auto sequential(Tsystems... systems) {
-//     return [=](Context& ctx) {
-//         (systems(ctx), ...);
-//     };
-// }
+        // Eagle Specific 
+
+        // TODO: FIX "EASING" ROTATION MOTION
+        if(ctx.HasComponent<PhysicsComponent3D>(e))
+        {
+            auto &physics3d = ctx.GetComponent<PhysicsComponent3D>(e);
+            if(raylib::Keyboard::IsKeyDown(KEY_R))
+            {
+                //physics3d.rotation.SetZ(physics3d.rotation.GetZ() + 0.1);
+                physics3d.rotation.z += 0.1;
+            }
+            else if(raylib::Keyboard::IsKeyDown(KEY_F))
+            {
+                //physics3d.rotation.SetZ(physics3d.rotation.GetZ() - 0.1);
+                physics3d.rotation.z -= 0.1;
+            } 
+            if(raylib::Keyboard::IsKeyDown(KEY_Q))
+            {
+                // physics3d.rotation.SetX(physics3d.rotation.GetX() + 0.1);
+                physics3d.rotation.x += 0.1;
+            }
+            else if(raylib::Keyboard::IsKeyDown(KEY_E))
+            {
+                // physics3d.rotation.SetX(physics3d.rotation.GetX() - 0.1);
+                physics3d.rotation.x -= 0.1;
+            }
+            if(raylib::Keyboard::IsKeyDown(KEY_D))
+            {
+                // physics3d.rotation.SetY(physics3d.rotation.GetX() - 0.1);
+                physics3d.rotation.y += 0.1;
+            }
+            else if(raylib::Keyboard::IsKeyDown(KEY_A))
+            {
+                // physics3d.rotation.SetY(physics3d.rotation.GetX() + 0.1);
+                physics3d.rotation.y -= 0.1;
+            }
+        }
+        else
+        {
+            auto &physics2D = ctx.GetComponent<PhysicsComponent2D>(e);
+            if(raylib::Keyboard::IsKeyDown(KEY_A))
+            {
+                physics2D.heading += physics2D.heading_mod;
+            }
+            else if(raylib::Keyboard::IsKeyDown(KEY_D))
+            {
+                physics2D.heading -= physics2D.heading_mod;
+            }
+        }
+    }   
+}
+
+/***************************************************************
+**
+**      BEGIN MAIN
+**
+****************************************************************/
 
 int main() {
     raylib::Window window(800, 600, "As0");
@@ -232,9 +336,10 @@ int main() {
     raylib::AudioDevice audio;
 
     raylib::Model penguin("models/penguin.glb");
-    penguin.transform = raylib::Transform(penguin.transform).Scale(30).RotateY(raylib::Degree(90));
+    penguin.transform = raylib::Transform(penguin.transform).Scale(30);
     raylib::Camera camera({0, 120, 500}, {0, 0, 0});
-
+    raylib::Model eagle("models/eagle.glb");
+    eagle.transform = raylib::Transform(eagle.transform).Scale(10);
     raylib::Model ground = raylib::Mesh::Plane(10000, 10000, 50, 50, 25).LoadModelFrom();
     raylib::Texture snow("textures/snow.jpg");
     ground.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = snow;
@@ -244,12 +349,40 @@ int main() {
     const float acceleration = 10;
     
     Context ctx;
-    auto e = ctx.CreateEntity();
-    ctx.AddComponent<ModelComponent>(e).model = &penguin;
-    ctx.AddComponent<PositionComponent>(e).position = raylib::Vector3{0, 0, 0};
 
-    while(!window.ShouldClose()) {
-        window.BeginDrawing(); {
+    for(int i = 0; i < 10; i++)
+    {
+        auto e = ctx.CreateEntity();
+        if(i < 5)
+        {
+            ctx.AddComponent<ModelComponent>(e).model = &penguin;
+            ctx.AddComponent<PositionComponent>(e).position = raylib::Vector3{-200 + 100*i, 0, 0};
+            ctx.AddComponent<PhysicsComponent>(e).acceleration = 2 * (i + 1);
+            ctx.GetComponent<PhysicsComponent>(e).target_speed_mod = 1 * (i + 1);
+            ctx.AddComponent<PhysicsComponent2D>(e).heading_mod = 1 * (i + 1);
+            ctx.GetComponent<PhysicsComponent2D>(e).heading = 90;
+            ctx.AddComponent<SelectedComponent>(e).selected = false;
+        }
+        else
+        {
+            ctx.AddComponent<ModelComponent>(e).model = &eagle;
+            ctx.AddComponent<PositionComponent>(e).position = raylib::Vector3{-200 + 100 * (i - 5), 150, 0};
+            ctx.AddComponent<PhysicsComponent>(e).acceleration = 5;
+            ctx.AddComponent<PhysicsComponent3D>(e);
+            ctx.AddComponent<SelectedComponent>(e).selected = false;
+        }
+    }
+    ctx.GetComponent<SelectedComponent>(selected).selected = true;
+    while(!window.ShouldClose()) 
+    {
+        window.BeginDrawing(); 
+        {
+            if(raylib::Keyboard::IsKeyPressed(KEY_TAB))
+            {
+                ctx.GetComponent<SelectedComponent>(selected).selected = false;
+                selected = (selected + 1) % ctx.entityMasks.size();
+                ctx.GetComponent<SelectedComponent>(selected).selected = true;
+            }
             window.ClearBackground(raylib::Color::RayWhite());
             float dt = window.GetFrameTime();
         
@@ -257,7 +390,12 @@ int main() {
                 skybox.Draw();
                 ground.Draw({});
 
+                InputSystem(ctx);
+                Compute3DPhysicsSystem(ctx, dt);
+                Compute2DPhysicsSystem(ctx, dt);
+                ComputePhysicsSystem(ctx, dt);
                 DrawModelSystem(ctx);
+                //std::cout << "Drew" << std::endl;
 
             } camera.EndMode();
             
