@@ -245,8 +245,8 @@ void Compute3DPhysicsSystem(Context &ctx, float dt)
         {
             physics.speed -= physics.acceleration * dt;
         }
-
-        //physics.velocity = 
+        raylib::Vector3 tempvel = {1, 0, 0};
+        physics.velocity = tempvel.RotateByQuaternion(physics3d.rotation) * physics.speed;
     }
 }
 
@@ -345,11 +345,10 @@ int main() {
     ground.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = snow;
 
     cs381::SkyBox skybox("textures/skybox.png");
-
-    const float acceleration = 10;
     
     Context ctx;
 
+    // Entity Setup
     for(int i = 0; i < 10; i++)
     {
         auto e = ctx.CreateEntity();
@@ -373,6 +372,7 @@ int main() {
         }
     }
     ctx.GetComponent<SelectedComponent>(selected).selected = true;
+    
     while(!window.ShouldClose()) 
     {
         window.BeginDrawing(); 
@@ -389,14 +389,11 @@ int main() {
             camera.BeginMode(); {
                 skybox.Draw();
                 ground.Draw({});
-
                 InputSystem(ctx);
                 Compute3DPhysicsSystem(ctx, dt);
                 Compute2DPhysicsSystem(ctx, dt);
                 ComputePhysicsSystem(ctx, dt);
                 DrawModelSystem(ctx);
-                //std::cout << "Drew" << std::endl;
-
             } camera.EndMode();
             
             window.DrawFPS();
