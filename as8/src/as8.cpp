@@ -201,6 +201,23 @@ void ComputePhysicsSystem(Context &ctx, float dt)
         auto &physics = ctx.GetComponent<PhysicsComponent>(e);
 
         position.position += physics.velocity * dt;
+
+        if(position.position.x > 350)
+        {
+            position.position.x = -350;
+        }
+        else if(position.position.x < -350)
+        {
+            position.position.x = 350;
+        }
+        else if(position.position.z > 500)
+        {
+            position.position.z = -500;
+        }
+        else if(position.position.z < -500)
+        {
+            position.position.z = 500;
+        }
     }
 }
 
@@ -234,8 +251,8 @@ void Compute3DPhysicsSystem(Context &ctx, float dt)
         if(!ctx.HasComponent<PhysicsComponent3D>(e)) continue;
         if(!ctx.HasComponent<PhysicsComponent>(e)) continue;
 
-        auto physics3d = ctx.GetComponent<PhysicsComponent3D>(e);
-        auto physics = ctx.GetComponent<PhysicsComponent>(e);
+        auto &physics3d = ctx.GetComponent<PhysicsComponent3D>(e);
+        auto &physics = ctx.GetComponent<PhysicsComponent>(e);
 
         if(physics.speed < physics.target_speed)
         {
@@ -245,7 +262,7 @@ void Compute3DPhysicsSystem(Context &ctx, float dt)
         {
             physics.speed -= physics.acceleration * dt;
         }
-        raylib::Vector3 tempvel = {1, 0, 0};
+        raylib::Vector3 tempvel = {1, 1, 1};
         physics.velocity = tempvel.RotateByQuaternion(physics3d.rotation) * physics.speed;
     }
 }
@@ -272,42 +289,42 @@ void InputSystem(Context &ctx)
             physics.target_speed = 0;
         }
 
-        // Eagle Specific 
-
-        // TODO: FIX "EASING" ROTATION MOTION
         if(ctx.HasComponent<PhysicsComponent3D>(e))
         {
             auto &physics3d = ctx.GetComponent<PhysicsComponent3D>(e);
+
+            raylib::Vector3 temp = physics3d.rotation.ToEuler();
             if(raylib::Keyboard::IsKeyDown(KEY_R))
             {
                 //physics3d.rotation.SetZ(physics3d.rotation.GetZ() + 0.1);
-                physics3d.rotation.z += 0.1;
+                temp.x += .1;
             }
             else if(raylib::Keyboard::IsKeyDown(KEY_F))
             {
                 //physics3d.rotation.SetZ(physics3d.rotation.GetZ() - 0.1);
-                physics3d.rotation.z -= 0.1;
+                temp.x -= .1;
             } 
             if(raylib::Keyboard::IsKeyDown(KEY_Q))
             {
                 // physics3d.rotation.SetX(physics3d.rotation.GetX() + 0.1);
-                physics3d.rotation.x += 0.1;
+                temp.z += .1;
             }
             else if(raylib::Keyboard::IsKeyDown(KEY_E))
             {
                 // physics3d.rotation.SetX(physics3d.rotation.GetX() - 0.1);
-                physics3d.rotation.x -= 0.1;
+                temp.z -= .1;
             }
             if(raylib::Keyboard::IsKeyDown(KEY_D))
             {
                 // physics3d.rotation.SetY(physics3d.rotation.GetX() - 0.1);
-                physics3d.rotation.y += 0.1;
+                temp.y += .1;
             }
             else if(raylib::Keyboard::IsKeyDown(KEY_A))
             {
                 // physics3d.rotation.SetY(physics3d.rotation.GetX() + 0.1);
-                physics3d.rotation.y -= 0.1;
+                temp.y -= .1;
             }
+            physics3d.rotation = physics3d.rotation.FromEuler(temp);
         }
         else
         {
@@ -367,6 +384,7 @@ int main() {
             ctx.AddComponent<ModelComponent>(e).model = &eagle;
             ctx.AddComponent<PositionComponent>(e).position = raylib::Vector3{-200 + 100 * (i - 5), 150, 0};
             ctx.AddComponent<PhysicsComponent>(e).acceleration = 5;
+            ctx.GetComponent<PhysicsComponent>(e).target_speed_mod = 2;
             ctx.AddComponent<PhysicsComponent3D>(e);
             ctx.AddComponent<SelectedComponent>(e).selected = false;
         }

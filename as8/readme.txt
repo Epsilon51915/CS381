@@ -36,4 +36,8 @@
 2. Readme question:
     ECS outperforms CO due to decreasing cache misses by clumping data as tightly as possible, 
     as well as supporting parallelisation by using batch processing on every entity.
+
+3. Extra Credit:
+    a. Wrapping! Same as previous assignments, if an entity strays too far in the x/z direction, it wraps around to
+    the other side of the screen.
     
