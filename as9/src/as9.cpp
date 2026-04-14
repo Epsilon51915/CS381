@@ -132,6 +132,12 @@ struct PositionComponent
     int posY;
 };
 
+struct Inventory
+{
+    // Wood, Stone, 
+    int inventory[10];
+};
+
 /***************************************************************
 **
 **      BEGIN SYSTEMS
@@ -159,9 +165,19 @@ void SetupWorldSystem(Context &ctx)
                 }
                 else
                 {
-                    map.world[i][j] = '.';
+                    if(rand() % 25 == 0)
+                    {
+                        map.world[i][j] = ',';
+                    }
+                    else if(rand() % 25 == 0)
+                    {
+                        map.world[i][j] = 'o';
+                    }
+                    else
+                    {
+                        map.world[i][j] = '.';
+                    }   
                 }
-                
             }
         }
     }
@@ -196,7 +212,19 @@ void DrawWorldSystem(Context &ctx)
                 }
                 else if(map.world[i][j] == '.')
                 {
-                    DrawText(buff, 40 * col, 36 * line, 72, GRAY);
+                    DrawText(buff, 40 * col, 36 * line, 72, WHITE);
+                }
+                else if(map.world[i][j] == ',')
+                {
+                    DrawText(buff, 40*col, 36*line, 72, BROWN);
+                }
+                else if(map.world[i][j] == 'o')
+                {
+                    DrawText(buff, 40*col, 36*(line+1), 24, GRAY);
+                }
+                else if(map.world[i][j] == 'x')
+                {
+                    DrawText(buff, 40*col, 36*(line+1), 24, BEIGE);
                 }
                 
                 line++;
@@ -215,29 +243,68 @@ void InputHandlerSystem(Context &ctx)
         if(!ctx.HasComponent<PositionComponent>(e)) continue;
         auto &position = ctx.GetComponent<PositionComponent>(e); 
         auto &world = ctx.GetComponent<PlayerLocations>(0);
+        auto map = ctx.GetComponent<MapComponent>(0);
         if(raylib::Keyboard::IsKeyPressed(KEY_W))
         {
-            world.all_posY.at(e)--;
-            position.posY--;
+            if(map.world[position.posX][position.posY - 1] != '^')
+            {
+                world.all_posY.at(e)--;
+                position.posY--;
+            }
+            
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_S))
         {
-            world.all_posY.at(e)++;
-            position.posY++;
+            if(map.world[position.posX][position.posY + 1] != '^')
+            {
+                world.all_posY.at(e)++;
+                position.posY++;
+            }
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_A))
         {
-            world.all_posX.at(e)--;
-            position.posX--;
+            if(map.world[position.posX-1][position.posY] != '^')
+            {
+                world.all_posX.at(e)--;
+                position.posX--;
+            }
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_D))
         {
-            world.all_posX.at(e)++;
-            position.posX++;
+            if(map.world[position.posX+1][position.posY] != '^')
+            {
+                world.all_posX.at(e)++;
+                position.posX++;
+            }
         }
         std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
     }
     
+}
+
+void PickupItemSystem(Context &ctx)
+{
+    for(entity e = 0; e < ctx.entityMasks.size(); ++e)
+    {
+        if(!ctx.HasComponent<PositionComponent>(e)) continue;
+        if(!ctx.HasComponent<Inventory>(e)) continue;  
+        auto pos = ctx.GetComponent<PositionComponent>(e);
+        auto &inv = ctx.GetComponent<Inventory>(e);
+        auto &world = ctx.GetComponent<MapComponent>(0);
+
+        if(world.world[pos.posX][pos.posY] == ',')
+        {
+            inv.inventory[0]++;
+            world.world[pos.posX][pos.posY] = 'x';
+            std::cout << "Picked up WOOD!" << std::endl;
+        }
+        else if(world.world[pos.posX][pos.posY] == 'o')
+        {
+            inv.inventory[1]++;
+            world.world[pos.posX][pos.posY] = 'x';
+            std::cout << "Picked up STONE!" << std::endl;
+        }
+    }
 }
 
 /***************************************************************
@@ -246,6 +313,7 @@ void InputHandlerSystem(Context &ctx)
 **
 ****************************************************************/
 int main() {
+    srand(time(nullptr));
     raylib::Window window(800, 700, "As8");
     window.SetState(FLAG_WINDOW_RESIZABLE);
     raylib::AudioDevice audio;
@@ -253,13 +321,17 @@ int main() {
     Context ctx;
 
     auto e = ctx.CreateEntity();
-    ctx.AddComponent<MapComponent>(e).player = 0;
-    ctx.AddComponent<PlayerLocations>(e).all_posX.emplace_back(50);
+    ctx.AddComponent<MapComponent>(e).player = 1;
+    ctx.AddComponent<PlayerLocations>(e).all_posX.emplace_back(-1);
+    ctx.GetComponent<PlayerLocations>(e).all_posY.emplace_back(-1);
+    ctx.GetComponent<PlayerLocations>(e).all_posX.emplace_back(50);
     ctx.GetComponent<PlayerLocations>(e).all_posY.emplace_back(50);
 
     auto player = ctx.CreateEntity();
     ctx.AddComponent<PositionComponent>(player).posX = 50;
     ctx.GetComponent<PositionComponent>(player).posY = 50;
+    ctx.AddComponent<Inventory>(player);
+
 
     SetupWorldSystem(ctx);
 
@@ -284,6 +356,7 @@ int main() {
                 window.ClearBackground(raylib::Color::Black());
                 InputHandlerSystem(ctx);
                 DrawWorldSystem(ctx);
+                PickupItemSystem(ctx);
             }    
             //window.DrawFPS();
         } window.EndDrawing();
