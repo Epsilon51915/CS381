@@ -114,6 +114,12 @@ struct Context {
 **
 ****************************************************************/
 
+struct Health
+{
+    float hp;
+    float armor;
+};
+
 struct MapComponent
 {
     char world[100][100];
@@ -355,6 +361,8 @@ int main() {
 
     auto player = ctx.CreateEntity();
     ctx.AddComponent<PositionComponent>(player).posX = 50;
+    ctx.AddComponent<Health>(player).hp = 10;
+    ctx.GetComponent<Health>(player).armor = 2;
     ctx.GetComponent<PositionComponent>(player).posY = 50;
     ctx.AddComponent<Inventory>(player);
     ctx.GetComponent<Inventory>(player).open = false;
