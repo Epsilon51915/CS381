@@ -134,7 +134,7 @@ struct PositionComponent
 
 struct Inventory
 {
-    // Wood, Stone, 
+    // Wood, Stone, Vine
     int inventory[10];
 };
 
@@ -172,6 +172,10 @@ void SetupWorldSystem(Context &ctx)
                     else if(rand() % 25 == 0)
                     {
                         map.world[i][j] = 'o';
+                    }
+                    else if(rand() % 25 == 0)
+                    {
+                        map.world[i][j] = 'c';
                     }
                     else
                     {
@@ -226,6 +230,10 @@ void DrawWorldSystem(Context &ctx)
                 {
                     DrawText(buff, 40*col, 36*(line+1), 24, BEIGE);
                 }
+                else if(map.world[i][j] == 'c')
+                {
+                    DrawText(buff, 40*col, 36*(line+1), 24, DARKGREEN);
+                }
                 
                 line++;
             }
@@ -251,7 +259,7 @@ void InputHandlerSystem(Context &ctx)
                 world.all_posY.at(e)--;
                 position.posY--;
             }
-            
+            std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_S))
         {
@@ -260,6 +268,7 @@ void InputHandlerSystem(Context &ctx)
                 world.all_posY.at(e)++;
                 position.posY++;
             }
+            std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_A))
         {
@@ -268,6 +277,7 @@ void InputHandlerSystem(Context &ctx)
                 world.all_posX.at(e)--;
                 position.posX--;
             }
+            std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_D))
         {
@@ -276,8 +286,9 @@ void InputHandlerSystem(Context &ctx)
                 world.all_posX.at(e)++;
                 position.posX++;
             }
+            std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
         }
-        std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
+        
     }
     
 }
@@ -303,6 +314,12 @@ void PickupItemSystem(Context &ctx)
             inv.inventory[1]++;
             world.world[pos.posX][pos.posY] = 'x';
             std::cout << "Picked up STONE!" << std::endl;
+        }
+        else if(world.world[pos.posX][pos.posY] == 'c')
+        {
+            inv.inventory[2]++;
+            world.world[pos.posX][pos.posY] = 'x';
+            std::cout << "Picked up VINE!" << std::endl;
         }
     }
 }
