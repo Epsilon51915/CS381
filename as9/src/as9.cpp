@@ -134,8 +134,9 @@ struct PositionComponent
 
 struct Inventory
 {
-    // Wood, Stone, Vine
+    // Wood, Stone, Vine, Seeds
     int inventory[10];
+    bool open;
 };
 
 /***************************************************************
@@ -240,8 +241,6 @@ void DrawWorldSystem(Context &ctx)
             col++;
         }
     }
-    
-    
 }
 
 void InputHandlerSystem(Context &ctx)
@@ -249,6 +248,8 @@ void InputHandlerSystem(Context &ctx)
     for(entity e = 0; e < ctx.entityMasks.size(); ++e)
     {
         if(!ctx.HasComponent<PositionComponent>(e)) continue;
+        if(!ctx.HasComponent<Inventory>(e)) continue;
+        auto &inv = ctx.GetComponent<Inventory>(e);
         auto &position = ctx.GetComponent<PositionComponent>(e); 
         auto &world = ctx.GetComponent<PlayerLocations>(0);
         auto map = ctx.GetComponent<MapComponent>(0);
@@ -259,7 +260,6 @@ void InputHandlerSystem(Context &ctx)
                 world.all_posY.at(e)--;
                 position.posY--;
             }
-            std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_S))
         {
@@ -268,7 +268,6 @@ void InputHandlerSystem(Context &ctx)
                 world.all_posY.at(e)++;
                 position.posY++;
             }
-            std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_A))
         {
@@ -277,7 +276,6 @@ void InputHandlerSystem(Context &ctx)
                 world.all_posX.at(e)--;
                 position.posX--;
             }
-            std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_D))
         {
@@ -286,9 +284,15 @@ void InputHandlerSystem(Context &ctx)
                 world.all_posX.at(e)++;
                 position.posX++;
             }
-            std::cout << "PosX: " << position.posX << " PosY: " << position.posY << std::endl;
         }
-        
+        else if(raylib::Keyboard::IsKeyPressed(KEY_ENTER) && !inv.open)
+        {
+            inv.open = true;
+        }
+        else if(raylib::Keyboard::IsKeyPressed(KEY_ENTER) && inv.open)
+        {
+            inv.open = false;
+        }
     }
     
 }
@@ -317,6 +321,11 @@ void PickupItemSystem(Context &ctx)
         }
         else if(world.world[pos.posX][pos.posY] == 'c')
         {
+            if(rand() % 10 == 0)
+            {
+                inv.inventory[3]++;
+                std::cout << "You found a SEED underneath the VINE!" << std::endl;
+            }
             inv.inventory[2]++;
             world.world[pos.posX][pos.posY] = 'x';
             std::cout << "Picked up VINE!" << std::endl;
@@ -348,6 +357,7 @@ int main() {
     ctx.AddComponent<PositionComponent>(player).posX = 50;
     ctx.GetComponent<PositionComponent>(player).posY = 50;
     ctx.AddComponent<Inventory>(player);
+    ctx.GetComponent<Inventory>(player).open = false;
 
 
     SetupWorldSystem(ctx);
