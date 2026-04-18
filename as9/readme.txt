@@ -22,4 +22,8 @@
     c. Run program
         ./as9
     d. Controls:
+        W - Move character up one tile
+        S - Move character down one tile
+        A - Move character left one tile
+        D - Move character right one tile
     

@@ -136,6 +136,7 @@ struct PositionComponent
 {
     int posX;
     int posY;
+    bool moveable = true;
 };
 
 struct Inventory
@@ -143,6 +144,7 @@ struct Inventory
     // Wood, Stone, Vine, Seeds
     int inventory[10];
     bool open;
+    int item = 0;
 };
 
 /***************************************************************
@@ -150,6 +152,40 @@ struct Inventory
 **      BEGIN SYSTEMS
 **
 ****************************************************************/
+
+void inventoryDisplay(Context &ctx, entity e)
+{
+    auto &inv = ctx.GetComponent<Inventory>(e);
+
+    for(int i = 0; i < 5; i++)
+    {
+        DrawText("|", 40, 36 * (14+i), 36, GRAY);
+        DrawText("|", 760, 36 * (14 + i), 36, GRAY);
+    }
+    for(int i = 0; i < 20; i++)
+    {
+        DrawText("_", 18 + 36 * (i+1), 648, 36, GRAY);
+    }
+
+    DrawText(",", 100, 250, 360, BROWN);
+    DrawText("o", 275, 440, 180, GRAY);
+    DrawText("c", 450, 440, 180, DARKGREEN);
+    DrawText("`", 625, 460, 360, GREEN);
+
+    std::string qwood = "x"+ std::to_string(inv.inventory[0]);
+    const char* qwooddisplay = qwood.c_str();
+    std::string qstone = "x"+ std::to_string(inv.inventory[1]);
+    const char* qstonedisplay = qstone.c_str();
+    std::string qvine = "x"+ std::to_string(inv.inventory[2]);
+    const char* qvinedisplay = qvine.c_str();
+    std::string qseed = "x"+ std::to_string(inv.inventory[3]);
+    const char* qseeddisplay = qseed.c_str();
+    
+    DrawText(qwooddisplay, 100, 600, 40, WHITE);
+    DrawText(qstonedisplay, 275, 600, 40, WHITE);
+    DrawText(qvinedisplay, 450, 600, 40, WHITE);
+    DrawText(qseeddisplay, 625, 600, 40, WHITE);
+}
 
 void SetupWorldSystem(Context &ctx)
 {
@@ -200,6 +236,7 @@ void DrawWorldSystem(Context &ctx)
     {
         if(!ctx.HasComponent<MapComponent>(e)) continue;
         if(!ctx.HasComponent<PlayerLocations>(e)) continue;
+        auto inv = ctx.GetComponent<Inventory>(1);
         auto map = ctx.GetComponent<MapComponent>(e);
         auto player_locations = ctx.GetComponent<PlayerLocations>(e);
 
@@ -246,6 +283,10 @@ void DrawWorldSystem(Context &ctx)
             }
             col++;
         }
+        if(inv.open)
+        {
+            inventoryDisplay(ctx, 1);
+        }
     }
 }
 
@@ -259,7 +300,7 @@ void InputHandlerSystem(Context &ctx)
         auto &position = ctx.GetComponent<PositionComponent>(e); 
         auto &world = ctx.GetComponent<PlayerLocations>(0);
         auto map = ctx.GetComponent<MapComponent>(0);
-        if(raylib::Keyboard::IsKeyPressed(KEY_W))
+        if(raylib::Keyboard::IsKeyPressed(KEY_W) && position.moveable)
         {
             if(map.world[position.posX][position.posY - 1] != '^')
             {
@@ -267,7 +308,7 @@ void InputHandlerSystem(Context &ctx)
                 position.posY--;
             }
         }
-        else if(raylib::Keyboard::IsKeyPressed(KEY_S))
+        else if(raylib::Keyboard::IsKeyPressed(KEY_S) && position.moveable)
         {
             if(map.world[position.posX][position.posY + 1] != '^')
             {
@@ -275,7 +316,7 @@ void InputHandlerSystem(Context &ctx)
                 position.posY++;
             }
         }
-        else if(raylib::Keyboard::IsKeyPressed(KEY_A))
+        else if(raylib::Keyboard::IsKeyPressed(KEY_A) && position.moveable)
         {
             if(map.world[position.posX-1][position.posY] != '^')
             {
@@ -283,7 +324,7 @@ void InputHandlerSystem(Context &ctx)
                 position.posX--;
             }
         }
-        else if(raylib::Keyboard::IsKeyPressed(KEY_D))
+        else if(raylib::Keyboard::IsKeyPressed(KEY_D) && position.moveable)
         {
             if(map.world[position.posX+1][position.posY] != '^')
             {
@@ -294,10 +335,12 @@ void InputHandlerSystem(Context &ctx)
         else if(raylib::Keyboard::IsKeyPressed(KEY_ENTER) && !inv.open)
         {
             inv.open = true;
+            position.moveable = false;
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_ENTER) && inv.open)
         {
             inv.open = false;
+            position.moveable = true;
         }
     }
     
@@ -379,7 +422,7 @@ int main() {
             if(state == 0)
             {
                 window.ClearBackground(raylib::Color::Gray());
-                DrawText("Hello!", 100, 100, 50, RED);
+                DrawText("World Game", 100, 100, 50, RED);
                 DrawText("Press ENTER to begin", 100, 200, 30, BLUE);
                 if(raylib::Keyboard::IsKeyPressed(KEY_ENTER))
                 {
