@@ -48,5 +48,5 @@
     following the long string of technicalities, each user can only update the tile they're standing on with regards
     to items on the ground (+10), the game is a custom game with custom sfx not related to penguins and eagles (+30),
     there is a username system with the prompt at the beginning of the game (+10), and each player is visually distinct
-    (+10). All in all, that amounts to 95 points total, including extra credit, that would be 115, if my assumptions on
+    (+10). All in all, that amounts to 95 points total, including extra credit, that would be 120, if my assumptions on
     which technicalities would fly are correct. 

@@ -168,9 +168,15 @@ struct PlayerLocations
     std::vector<int> all_colors;
 };
 
-struct PlayerNames
+struct Display
 {
-    std::vector<std::string> all_names;
+    const char* display;
+    int count;
+};
+
+struct PlayerName
+{
+    std::string name;
 };
 
 struct PositionComponent
@@ -279,12 +285,18 @@ void DrawWorldSystem(Context &ctx)
         auto inv = ctx.GetComponent<Inventory>(1);
         auto map = ctx.GetComponent<MapComponent>(e);
         auto player_locations = ctx.GetComponent<PlayerLocations>(e);
-        auto player_names = ctx.GetComponent<PlayerNames>(e);
-        const char* name = player_names.all_names.at(1).c_str();
+        auto display = ctx.GetComponent<Display>(e);
+        //auto player_names = ctx.GetComponent<PlayerNames>(e);
+        //const char* name = player_names.all_names.at(1).c_str();
         //std::cout << player_names.all_names.at(1) << std::endl;
         int col, line;
         col = 1;
-        DrawText(name, 50, 20, 20, BLUE);
+        if(display.count > 0)
+        {
+            DrawText(display.display, 50, 20, 20, YELLOW);
+            display.count--;
+        }
+        
         for(int i = player_locations.all_posX.at(map.player) - 9; i < player_locations.all_posX.at(map.player) + 10; i++)
         {
             line = 1;
@@ -299,6 +311,7 @@ void DrawWorldSystem(Context &ctx)
                 else if(i == player_locations.all_posX.at(map.player) && j == player_locations.all_posY.at(map.player))
                 {
                     char player[2] = {'+', '\0'};
+                    //DrawText(player_names.all_names.at(1).c_str(), 40 * col, 36 * (line), 20, itoC[player_locations.all_colors.at(map.player)]);
                     DrawText(player, 40 * col, 36 * (line+1), 36, itoC[player_locations.all_colors.at(map.player)]);
                 }
                 else if(map.world[i][j] == '.')
@@ -402,27 +415,39 @@ void PickupItemSystem(Context &ctx)
         auto pos = ctx.GetComponent<PositionComponent>(e);
         auto &inv = ctx.GetComponent<Inventory>(e);
         auto &world = ctx.GetComponent<MapComponent>(0);
+        auto& dis = ctx.GetComponent<Display>(0);
+        auto player_names = ctx.GetComponent<PlayerName>(e);
+        //const char* name = player_names.name.c_str();
+        std::string name = player_names.name;
 
         if(world.world[pos.posX][pos.posY] == ',')
         {
             inv.inventory[0]++;
             world.world[pos.posX][pos.posY] = 'x';
-            std::cout << "Picked up WOOD!" << std::endl;
+            std::string displayS = name + " picked up WOOD!";
+            
+            const char* display = displayS.c_str();std::cout << display << std::endl;
+            dis.display = display;
+            dis.count = 120;
             pickup.Play();
         }
         else if(world.world[pos.posX][pos.posY] == 'o')
         {
             inv.inventory[1]++;
             world.world[pos.posX][pos.posY] = 'x';
-            std::cout << "Picked up STONE!" << std::endl;
+            std::string displayS = name + " picked up STONE!";
+            const char* display = displayS.c_str();
+            dis.display = display;
+            dis.count = 120;
             pickup.Play();
         }
         else if(world.world[pos.posX][pos.posY] == 'c')
         {
+            std::string displayS = name + " picked up VINE!";
             if(rand() % 10 == 0)
             {
                 inv.inventory[3]++;
-                std::cout << "You found a SEED underneath the VINE!" << std::endl;
+                displayS = displayS + " And found a SEED!";
                 luckyPickup.Play();
             }
             else
@@ -431,7 +456,10 @@ void PickupItemSystem(Context &ctx)
             }
             inv.inventory[2]++;
             world.world[pos.posX][pos.posY] = 'x';
-            std::cout << "Picked up VINE!" << std::endl;
+            
+            const char* display = displayS.c_str();
+            dis.display = display;
+            dis.count = 120;
         }
     }
 }
@@ -444,6 +472,7 @@ void PickupItemSystem(Context &ctx)
 int main() {
     srand(time(nullptr));
     raylib::Window window(800, 700, "As8");
+    window.SetTargetFPS(60);
     window.SetState(FLAG_WINDOW_RESIZABLE);
     
     
@@ -456,7 +485,8 @@ int main() {
     ctx.GetComponent<PlayerLocations>(e).all_colors.emplace_back(-1);
     ctx.GetComponent<PlayerLocations>(e).all_posX.emplace_back(50);
     ctx.GetComponent<PlayerLocations>(e).all_posY.emplace_back(50);
-    ctx.AddComponent<PlayerNames>(e).all_names.emplace_back("");
+    ctx.AddComponent<Display>(e);
+    
 
     auto player = ctx.CreateEntity();
     ctx.AddComponent<PositionComponent>(player).posX = 50;
@@ -465,13 +495,14 @@ int main() {
     ctx.GetComponent<PositionComponent>(player).posY = 50;
     ctx.AddComponent<Inventory>(player);
     ctx.GetComponent<Inventory>(player).open = false;
-
+    ctx.AddComponent<PlayerName>(player).name = "";
 
     SetupWorldSystem(ctx);
 
     int state = 0;
     int color = 0;
-    std::string username = "";
+    std::string username;
+    const char* display;
     // std::string qwood = "x"+ std::to_string(inv.inventory[0]);
     // const char* qwooddisplay = qwood.c_str();
     while(!window.ShouldClose()) 
@@ -507,9 +538,13 @@ int main() {
             {
                 window.ClearBackground(raylib::Color::DarkGray());
                 DrawText("Enter a Username", 100, 200, 40, BLUE);
-                username += (char)raylib::Keyboard::GetCharPressed();
-                const char* display = username.c_str();
-                std::cout << username << std::endl;
+                int character = raylib::Keyboard::GetCharPressed();
+                if(character != 0)
+                {
+                    username += (char)character;
+                }
+                display = username.c_str();
+                
                 DrawText(display, 100, 300, 40, BLUE);
                 if(raylib::Keyboard::IsKeyPressed(KEY_BACKSPACE))
                 {
@@ -517,7 +552,7 @@ int main() {
                 }
                 if(raylib::Keyboard::IsKeyPressed(KEY_ENTER))
                 {
-                    ctx.GetComponent<PlayerNames>(e).all_names.emplace_back(username);
+                    ctx.GetComponent<PlayerName>(player).name = username;
                     state++;
                 }
             }
