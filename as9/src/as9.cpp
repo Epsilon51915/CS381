@@ -16,11 +16,41 @@
 #include <memory>
 #include <vector>
 #include <iostream>
+#include <map>
 
 raylib::AudioDevice audio;
 raylib::Sound pickup("audio/itemPickup.mp3");
 raylib::Sound luckyPickup("audio/luckyPickup.mp3");
 raylib::Sound walk("audio/walk.mp3");
+
+std::map<int, Color> itoC = 
+{
+    {0, RED},
+    {1, GREEN},
+    {2, DARKGREEN},
+    {3, BLUE},
+    {4, DARKBLUE},
+    {5, GRAY},
+    {6, DARKGRAY},
+    {7, WHITE},
+    {8, DARKBROWN},
+    {9, PURPLE},
+    {10, DARKPURPLE}
+};
+
+// enum Colors
+// {
+//     red = 0,
+//     green,
+//     blue,
+//     white,
+//     gray,
+//     darkgreen,
+//     darkblue,
+//     darkbrown,
+//     darkpurple,
+//     darkgray
+// };
 
 size_t globalComponentCounter = 0;
 template<typename T>
@@ -135,6 +165,12 @@ struct PlayerLocations
 {
     std::vector<int> all_posX;
     std::vector<int> all_posY;
+    std::vector<int> all_colors;
+};
+
+struct PlayerNames
+{
+    std::vector<std::string> all_names;
 };
 
 struct PositionComponent
@@ -243,9 +279,12 @@ void DrawWorldSystem(Context &ctx)
         auto inv = ctx.GetComponent<Inventory>(1);
         auto map = ctx.GetComponent<MapComponent>(e);
         auto player_locations = ctx.GetComponent<PlayerLocations>(e);
-
+        auto player_names = ctx.GetComponent<PlayerNames>(e);
+        const char* name = player_names.all_names.at(1).c_str();
+        //std::cout << player_names.all_names.at(1) << std::endl;
         int col, line;
         col = 1;
+        DrawText(name, 50, 20, 20, BLUE);
         for(int i = player_locations.all_posX.at(map.player) - 9; i < player_locations.all_posX.at(map.player) + 10; i++)
         {
             line = 1;
@@ -260,7 +299,7 @@ void DrawWorldSystem(Context &ctx)
                 else if(i == player_locations.all_posX.at(map.player) && j == player_locations.all_posY.at(map.player))
                 {
                     char player[2] = {'+', '\0'};
-                    DrawText(player, 40 * col, 36 * (line+1), 36, RED);
+                    DrawText(player, 40 * col, 36 * (line+1), 36, itoC[player_locations.all_colors.at(map.player)]);
                 }
                 else if(map.world[i][j] == '.')
                 {
@@ -414,8 +453,10 @@ int main() {
     ctx.AddComponent<MapComponent>(e).player = 1;
     ctx.AddComponent<PlayerLocations>(e).all_posX.emplace_back(-1);
     ctx.GetComponent<PlayerLocations>(e).all_posY.emplace_back(-1);
+    ctx.GetComponent<PlayerLocations>(e).all_colors.emplace_back(-1);
     ctx.GetComponent<PlayerLocations>(e).all_posX.emplace_back(50);
     ctx.GetComponent<PlayerLocations>(e).all_posY.emplace_back(50);
+    ctx.AddComponent<PlayerNames>(e).all_names.emplace_back("");
 
     auto player = ctx.CreateEntity();
     ctx.AddComponent<PositionComponent>(player).posX = 50;
@@ -429,7 +470,10 @@ int main() {
     SetupWorldSystem(ctx);
 
     int state = 0;
-
+    int color = 0;
+    std::string username = "";
+    // std::string qwood = "x"+ std::to_string(inv.inventory[0]);
+    // const char* qwooddisplay = qwood.c_str();
     while(!window.ShouldClose()) 
     {
         window.BeginDrawing(); 
@@ -438,13 +482,46 @@ int main() {
             {
                 window.ClearBackground(raylib::Color::Gray());
                 DrawText("World Game", 100, 100, 50, RED);
-                DrawText("Press ENTER to begin", 100, 200, 30, BLUE);
+                DrawText("Select a Color (left/right arrow)", 100, 200, 40, BLUE);
+                DrawText("COLOR", 100, 300, 40, itoC[color]);
+                if(raylib::Keyboard::IsKeyPressed(KEY_LEFT))
+                {
+                    color--;
+                    if(color < 0)
+                    {
+                        color = 10;
+                    }
+                }
+                if(raylib::Keyboard::IsKeyPressed(KEY_RIGHT))
+                {
+                    color = (color + 1) % 11;
+                }
                 if(raylib::Keyboard::IsKeyPressed(KEY_ENTER))
                 {
                     state++;
+                    ctx.GetComponent<PlayerLocations>(e).all_colors.emplace_back(color);
                 }
+                DrawText("Press ENTER to continue", 100, 500, 30, BLUE);
             }
             else if(state == 1)
+            {
+                window.ClearBackground(raylib::Color::DarkGray());
+                DrawText("Enter a Username", 100, 200, 40, BLUE);
+                username += (char)raylib::Keyboard::GetCharPressed();
+                const char* display = username.c_str();
+                std::cout << username << std::endl;
+                DrawText(display, 100, 300, 40, BLUE);
+                if(raylib::Keyboard::IsKeyPressed(KEY_BACKSPACE))
+                {
+                    username.pop_back();
+                }
+                if(raylib::Keyboard::IsKeyPressed(KEY_ENTER))
+                {
+                    ctx.GetComponent<PlayerNames>(e).all_names.emplace_back(username);
+                    state++;
+                }
+            }
+            else if(state == 2)
             {
                 window.ClearBackground(raylib::Color::Black());
                 InputHandlerSystem(ctx);
