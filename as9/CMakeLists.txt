@@ -9,3 +9,7 @@ file(GLOB sources "src/*.cpp" "src/*.c")
 add_executable(as9 src/as9.cpp src/componentCounter.cpp)
 target_link_libraries(as9 PUBLIC raylib raylib_cpp raygui)
 set_property(TARGET as9 PROPERTY CXX_STANDARD 20)
+
+configure_file(../assets/audio/itemPickup.mp3 audio/itemPickup.mp3 COPYONLY)
+configure_file(../assets/audio/luckyPickup.mp3 audio/luckyPickup.mp3 COPYONLY)
+configure_file(../assets/audio/walk.mp3 audio/walk.mp3 COPYONLY)

@@ -17,6 +17,11 @@
 #include <vector>
 #include <iostream>
 
+raylib::AudioDevice audio;
+raylib::Sound pickup("audio/itemPickup.mp3");
+raylib::Sound luckyPickup("audio/luckyPickup.mp3");
+raylib::Sound walk("audio/walk.mp3");
+
 size_t globalComponentCounter = 0;
 template<typename T>
 size_t GetComponentID(/* T reference = {} */) {
@@ -166,7 +171,6 @@ void inventoryDisplay(Context &ctx, entity e)
     {
         DrawText("_", 18 + 36 * (i+1), 648, 36, GRAY);
     }
-
     DrawText(",", 100, 250, 360, BROWN);
     DrawText("o", 275, 440, 180, GRAY);
     DrawText("c", 450, 440, 180, DARKGREEN);
@@ -306,6 +310,7 @@ void InputHandlerSystem(Context &ctx)
             {
                 world.all_posY.at(e)--;
                 position.posY--;
+                walk.Play();
             }
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_S) && position.moveable)
@@ -314,6 +319,7 @@ void InputHandlerSystem(Context &ctx)
             {
                 world.all_posY.at(e)++;
                 position.posY++;
+                walk.Play();
             }
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_A) && position.moveable)
@@ -322,6 +328,7 @@ void InputHandlerSystem(Context &ctx)
             {
                 world.all_posX.at(e)--;
                 position.posX--;
+                walk.Play();
             }
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_D) && position.moveable)
@@ -330,6 +337,7 @@ void InputHandlerSystem(Context &ctx)
             {
                 world.all_posX.at(e)++;
                 position.posX++;
+                walk.Play();
             }
         }
         else if(raylib::Keyboard::IsKeyPressed(KEY_ENTER) && !inv.open)
@@ -361,12 +369,14 @@ void PickupItemSystem(Context &ctx)
             inv.inventory[0]++;
             world.world[pos.posX][pos.posY] = 'x';
             std::cout << "Picked up WOOD!" << std::endl;
+            pickup.Play();
         }
         else if(world.world[pos.posX][pos.posY] == 'o')
         {
             inv.inventory[1]++;
             world.world[pos.posX][pos.posY] = 'x';
             std::cout << "Picked up STONE!" << std::endl;
+            pickup.Play();
         }
         else if(world.world[pos.posX][pos.posY] == 'c')
         {
@@ -374,6 +384,11 @@ void PickupItemSystem(Context &ctx)
             {
                 inv.inventory[3]++;
                 std::cout << "You found a SEED underneath the VINE!" << std::endl;
+                luckyPickup.Play();
+            }
+            else
+            {
+                pickup.Play();
             }
             inv.inventory[2]++;
             world.world[pos.posX][pos.posY] = 'x';
@@ -391,7 +406,7 @@ int main() {
     srand(time(nullptr));
     raylib::Window window(800, 700, "As8");
     window.SetState(FLAG_WINDOW_RESIZABLE);
-    raylib::AudioDevice audio;
+    
     
     Context ctx;
 
