@@ -1,0 +1,94 @@
+[gd_scene format=3 uid="uid://xysb3iw1ge28"]
+
+[ext_resource type="Script" uid="uid://7ajjj316pjoi" path="res://Networking.gd" id="1_r04n3"]
+[ext_resource type="Script" uid="uid://dnvliqo3t1bxv" path="res://RemoteLabel.gd" id="2_n4tde"]
+
+[node name="Game" type="Control" unique_id=1205225358]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 448.0
+offset_bottom = 210.0
+script = ExtResource("1_r04n3")
+
+[node name="Menu" type="Control" parent="." unique_id=754346575]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PanelContainer" type="PanelContainer" parent="Menu" unique_id=817707071]
+layout_mode = 0
+offset_right = 497.0
+offset_bottom = 168.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/PanelContainer" unique_id=1252349632]
+layout_mode = 2
+
+[node name="Host" type="Button" parent="Menu/PanelContainer/VBoxContainer" unique_id=779152510]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Host Game"
+
+[node name="IP" type="LineEdit" parent="Menu/PanelContainer/VBoxContainer" unique_id=558168558]
+layout_mode = 2
+size_flags_vertical = 3
+text = "localhost"
+
+[node name="Join" type="Button" parent="Menu/PanelContainer/VBoxContainer" unique_id=203230134]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Join Game"
+
+[node name="Label" type="Control" parent="." unique_id=1687212018]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Label" unique_id=1487197263]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Increment" type="Button" parent="Label/HBoxContainer" unique_id=1695209748]
+layout_mode = 2
+text = "Increment"
+
+[node name="Label2" type="Label" parent="Label/HBoxContainer" unique_id=163956875]
+layout_mode = 2
+text = "Value: 9999"
+script = ExtResource("2_n4tde")
+
+[node name="Decrement" type="Button" parent="Label/HBoxContainer" unique_id=684090126]
+layout_mode = 2
+text = "Decrement"
+
+[node name="PlayerIDs" type="VBoxContainer" parent="Label" unique_id=1855928678]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.29200003
+anchor_bottom = 0.43300003
+offset_left = 173.0
+offset_top = 125.0
+offset_right = 140.18399
+offset_bottom = 170.06999
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=59006934]
+_spawnable_scenes = PackedStringArray("uid://b05gwe3glxqoq")
+spawn_path = NodePath("../Label/PlayerIDs")
+
+[connection signal="pressed" from="Menu/PanelContainer/VBoxContainer/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="Menu/PanelContainer/VBoxContainer/Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="Label/HBoxContainer/Increment" to="Label/HBoxContainer/Label2" method="_on_increment_pressed"]
+[connection signal="pressed" from="Label/HBoxContainer/Decrement" to="Label/HBoxContainer/Label2" method="_on_decrement_pressed"]
