@@ -17,3 +17,6 @@ Controls:
 		For all instances, once you are in the "game", press increment to update the shown value by 1, and decrement to decrease
 		the shown value by 1.
 
+Readme Question:
+	The RPC updates values by first checking that the server itself (sender_id 0) is not doing any incrementing. The function then increments the 
+	value or decrements it as necessary, and then sends out a message to all users. 
